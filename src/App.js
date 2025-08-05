@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
 import axios from 'axios';
+import { QRCodeCanvas } from 'qrcode.react';
+
 const BASE_URL = process.env.REACT_APP_API || 'http://127.0.0.1:5000';
+
 
 function App() {
   const [name, setName] = useState('');
@@ -159,10 +163,47 @@ function App() {
     0
   );
 
+  // if (!role) {
+  //   return authMode === 'login'
+  //     ? <Login onLogin={(r) => setRole(r)} switchToRegister={() => setAuthMode('register')} />
+  //     : <Register onRegister={(r) => setRole(r)} switchToLogin={() => setAuthMode('login')} />;
+  // }
+
+  // if (!role) {
+  //   return authMode === 'login'
+  //     ? <Login onLogin={(r) => setRole(r)} switchToRegister={() => setAuthMode('register')} />
+  //     : <Register onRegister={(r) => setRole(r)} switchToLogin={() => setAuthMode('login')} />
+  // }
+
+  // if (!role) {
+  //   return authMode === 'login'
+  //   ? <Register onRegister={(r) => setRole(r)} switchToLogin={() => setAuthMode('login')} />
+  //   : <Login onLogin={(r) => setRole(r)} switchToRegister={() => setAuthMode('register')} />;
+  // }
+
   return (
     <div style={{ padding: '30px', fontFamily: 'Segoe UI, sans-serif', background: '#e6e27bac', minHeight: '100vh' }}>
-      <h1 style={{ textAlign: 'center', color: '#444' }}>Event Manager</h1>
 
+      {/* <button
+        onClick={() => {
+          localStorage.clear();
+          setRole(null);
+        }}
+        style={{
+          float: 'right',
+          marginBottom: '10px',
+          background: '#b74d57',
+          color: '#fff',
+          border: 'none',
+          padding: '8px 16px',
+          borderRadius: '6px',
+          cursor: 'pointer'
+        }}
+      >
+        Logout
+      </button> */}
+
+      <h1 style={{ textAlign: 'center', color: '#444' }}>Event Manager</h1>
       <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginBottom: '20px' }}>
         <div style={totalBox}><strong>Total People:</strong> {totalPeople}</div>
         <div style={totalBox}><strong>Total Expenses:</strong> ₹{totalExpenses}</div>
@@ -178,104 +219,107 @@ function App() {
         style={{ display: 'block', margin: '0 auto 20px auto', padding: '10px', width: '60%', borderRadius: '6px', border: '1px solid #bbb' }}
       />
 
-      <form onSubmit={handleSubmit} style={formBox}>
-        <input placeholder="Event Name" value={name} onChange={(e) => setName(e.target.value)} required style={inputStyle} />
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required style={inputStyle} />
-        <input placeholder="Description" value={desc} onChange={(e) => setDesc(e.target.value)} required style={inputStyle} />
-        <input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} style={inputStyle} />
-        <input type="number" placeholder="Budget ₹" value={budget} onChange={(e) => setBudget(e.target.value)} style={inputStyle} />
+      {/* {role === 'admin' && ( */}
+        <form onSubmit={handleSubmit} style={formBox}>
+          <input placeholder="Event Name" value={name} onChange={(e) => setName(e.target.value)} required style={inputStyle} />
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required style={inputStyle} />
+          <input placeholder="Description" value={desc} onChange={(e) => setDesc(e.target.value)} required style={inputStyle} />
+          <input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} style={inputStyle} />
+          <input type="number" placeholder="Budget ₹" value={budget} onChange={(e) => setBudget(e.target.value)} style={inputStyle} />
 
-        {/* People Section */}
-        <div>
-          <input
-            placeholder="Add person"
-            value={personInput}
-            onChange={(e) => setPersonInput(e.target.value)}
-            style={inputStyle}
-          />
-          <button type="button" onClick={addPerson} style={{ ...smallButton, marginBottom: '10px' }}>Add Person</button>
-          <ul>
-            {peopleList.map((p, i) => (
-              <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input
-                  type="text"
-                  value={p}
-                  onChange={(e) => {
-                    const updated = [...peopleList];
-                    updated[i] = e.target.value;
-                    setPeopleList(updated);
-                  }}
-                  style={{ flexGrow: 1, padding: '4px' }}
-                />
-                <button type="button" onClick={() => {
-                  setPeopleList(peopleList.filter((_, index) => index !== i));
-                }} style={{ ...smallButton, background: '#b74d57ff' }}>
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
+          {/* People Section */}
+          <div>
+            <input
+              placeholder="Add person"
+              value={personInput}
+              onChange={(e) => setPersonInput(e.target.value)}
+              style={inputStyle}
+            />
+            <button type="button" onClick={addPerson} style={{ ...smallButton, marginBottom: '10px' }}>Add Person</button>
+            <ul>
+              {peopleList.map((p, i) => (
+                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input
+                    type="text"
+                    value={p}
+                    onChange={(e) => {
+                      const updated = [...peopleList];
+                      updated[i] = e.target.value;
+                      setPeopleList(updated);
+                    }}
+                    style={{ flexGrow: 1, padding: '4px' }}
+                  />
+                  <button type="button" onClick={() => {
+                    setPeopleList(peopleList.filter((_, index) => index !== i));
+                  }} style={{ ...smallButton, background: '#b74d57ff' }}>
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
 
-        </div>
+          </div>
 
-        {/* Expenses Section */}
-        <div>
-          <input
-            placeholder="Expense description"
-            value={expenseDesc}
-            onChange={(e) => setExpenseDesc(e.target.value)}
-            style={inputStyle}
-          />
-          <input
-            type="number"
-            placeholder="Amount"
-            value={expenseAmount}
-            onChange={(e) => setExpenseAmount(e.target.value)}
-            style={inputStyle}
-          />
-          <button type="button" onClick={addExpense} style={{ ...smallButton, marginBottom: '10px' }}>Add Expense</button>
-          <ul>
-            {expensesList.map((ex, i) => (
-              <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                <input
-                  type="text"
-                  value={ex.description}
-                  onChange={(e) => {
-                    const updated = [...expensesList];
-                    updated[i].description = e.target.value;
-                    setExpensesList(updated);
-                  }}
-                  placeholder="Description"
-                  style={{ flex: 2, padding: '4px' }}
-                />
-                <input
-                  type="number"
-                  value={ex.amount}
-                  onChange={(e) => {
-                    const updated = [...expensesList];
-                    updated[i].amount = parseFloat(e.target.value) || 0;
-                    setExpensesList(updated);
-                  }}
-                  placeholder="Amount"
-                  style={{ flex: 1, padding: '4px' }}
-                />
-                <button type="button" onClick={() => {
-                  setExpensesList(expensesList.filter((_, index) => index !== i));
-                }} style={{ ...smallButton, background: '#b74d57ff' }}>
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
+          {/* Expenses Section */}
+          <div>
+            <input
+              placeholder="Expense description"
+              value={expenseDesc}
+              onChange={(e) => setExpenseDesc(e.target.value)}
+              style={inputStyle}
+            />
+            <input
+              type="number"
+              placeholder="Amount"
+              value={expenseAmount}
+              onChange={(e) => setExpenseAmount(e.target.value)}
+              style={inputStyle}
+            />
+            <button type="button" onClick={addExpense} style={{ ...smallButton, marginBottom: '10px' }}>Add Expense</button>
+            <ul>
+              {expensesList.map((ex, i) => (
+                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                  <input
+                    type="text"
+                    value={ex.description}
+                    onChange={(e) => {
+                      const updated = [...expensesList];
+                      updated[i].description = e.target.value;
+                      setExpensesList(updated);
+                    }}
+                    placeholder="Description"
+                    style={{ flex: 2, padding: '4px' }}
+                  />
+                  <input
+                    type="number"
+                    value={ex.amount}
+                    onChange={(e) => {
+                      const updated = [...expensesList];
+                      updated[i].amount = parseFloat(e.target.value) || 0;
+                      setExpensesList(updated);
+                    }}
+                    placeholder="Amount"
+                    style={{ flex: 1, padding: '4px' }}
+                  />
+                  <button type="button" onClick={() => {
+                    setExpensesList(expensesList.filter((_, index) => index !== i));
+                  }} style={{ ...smallButton, background: '#b74d57ff' }}>
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
 
-        </div>
+          </div>
 
 
-        <button type="submit" style={{ ...buttonStyle, background: editId === null ? '#6142aeff' : '#6fc884ff' }}>
-          {editId === null ? 'Add Event' : 'Update Event'}
-        </button>
+          <button type="submit" style={{ ...buttonStyle, background: editId === null ? '#6142aeff' : '#6fc884ff' }}>
+            {editId === null ? 'Add Event' : 'Update Event'}
+          </button>
 
-      </form>
+        </form>
+
+      {/* )} */}
 
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         {filteredEvents.map((e) => (
@@ -325,17 +369,61 @@ function App() {
               <p><strong>Total Expenses:</strong> ₹{e.expenses.reduce((acc, ex) => acc + parseFloat(ex.amount), 0).toFixed(2)}</p>
             </div>
 
-            <button onClick={() => toggleComplete(e.id)} style={smallButton}>
-              {e.completed ? 'Undo' : 'Complete'}
-            </button>
-            <button onClick={() => startEdit(e.id)} style={{ ...smallButton, background: '#957d34ff' }}>Edit</button>
-            <button onClick={() => deleteEvent(e.id)} style={{ ...smallButton, background: '#b74d57ff' }}>Delete</button>
+            {/* {role === 'admin' && (
+              <> */}
+                <button onClick={() => toggleComplete(e.id)} style={smallButton}>
+                  {e.completed ? 'Undo' : 'Complete'}
+                </button>
+                <button onClick={() => startEdit(e.id)} style={{ ...smallButton, background: '#957d34ff' }}>Edit</button>
+                <button onClick={() => deleteEvent(e.id)} style={{ ...smallButton, background: '#b74d57ff' }}>Delete</button>
+              {/* </>
+            )} */}
+
+            <div style={{ marginTop: '15px' }}>
+
+              {/* <QRCodeCanvas
+                value={JSON.stringify({
+                  name: e.name,
+                  date: e.date,
+                  desc: e.desc,
+                  location: e.location,
+                  budget: e.budget,
+                  people: e.people,
+                  expenses: e.expenses
+                })}
+                size={128}
+                bgColor="#ffffff"
+                fgColor="#000000"
+                level="H"
+                includeMargin={true}
+              /> */}
+
+              <div style={{ marginTop: '15px' }}>
+
+                <QRCodeCanvas
+                  value={`Event: ${e.name}
+                  Date: ${e.date}
+                  Location: ${e.location}
+                  Description: ${e.desc}
+                  Budget: ₹${e.budget}
+                  People: ${e.people.join(', ')}
+                  Expenses: ₹${e.expenses.reduce((sum, ex) => sum + parseFloat(ex.amount), 0).toFixed(2)}`}
+                  size={128}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
+
+            </div>
           </div>
 
 
         ))}
 
       </div>
+
     </div>
   );
 }
